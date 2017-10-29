@@ -8,6 +8,8 @@ import com.lmax.disruptor.dsl.ProducerType;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by teeyoung on 17/10/27.
@@ -20,11 +22,21 @@ public class SingleProductorLongEventMain {
         // Executor that will be used to construct new threads for consumers
         Executor executor = Executors.newCachedThreadPool();
 
+        ThreadFactory threadFactory = new ThreadFactory() {
+
+            private final AtomicInteger index = new AtomicInteger(1);
+
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread((ThreadGroup) null, r, "disruptor-thread-" + index.getAndIncrement());
+            }
+        };
+
         // Specify the size of the ring buffer, must be power of 2.
         int bufferSize = 1024;
 
         // Construct the Disruptor
-        Disruptor<LongEvent> disruptor = new Disruptor<LongEvent>(LongEvent::new, bufferSize, executor, ProducerType.SINGLE, new BlockingWaitStrategy());
+        Disruptor<LongEvent> disruptor = new Disruptor<LongEvent>(LongEvent::new, bufferSize, threadFactory, ProducerType.SINGLE, new BlockingWaitStrategy());
 
         // Connect the handler
         disruptor.handleEventsWith(new LongEventHandler());
