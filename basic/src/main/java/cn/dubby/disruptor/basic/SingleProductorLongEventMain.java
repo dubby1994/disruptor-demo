@@ -39,7 +39,7 @@ public class SingleProductorLongEventMain {
         for (long l = 0; l < 10; l++) {
             bb.putLong(0, l);
             ringBuffer.publishEvent(TRANSLATOR, bb);
-            Thread.sleep(1000);
+            Thread.sleep(100);
         }
     }
 

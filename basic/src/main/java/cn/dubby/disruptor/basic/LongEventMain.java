@@ -34,10 +34,10 @@ public class LongEventMain {
         RingBuffer<LongEvent> ringBuffer = disruptor.getRingBuffer();
 
         ByteBuffer bb = ByteBuffer.allocate(8);
-        for (long l = 0; true; l++) {
+        for (long l = 0; l < 10; l++) {
             bb.putLong(0, l);
             ringBuffer.publishEvent(TRANSLATOR, bb);
-            Thread.sleep(1000);
+            Thread.sleep(100);
         }
     }
 }
